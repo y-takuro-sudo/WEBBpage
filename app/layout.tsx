@@ -1,9 +1,5 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import ThemeWrapper from '@/components/ThemeWrapper'
-import SmoothScroll from '@/components/SmoothScroll'
-import Header from '@/components/Header'
-import Menu from '@/components/Menu'
 
 export const metadata: Metadata = {
   title: 'WEBB Inc. | Film / Photo / Design',
@@ -24,16 +20,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="ja" suppressHydrationWarning>
-      <body>
-        <ThemeWrapper>
-          <SmoothScroll>
-            <Header />
-            <Menu />
-            <main>{children}</main>
-          </SmoothScroll>
-        </ThemeWrapper>
-      </body>
+    <html lang="ja">
+      <body>{children}</body>
     </html>
   )
 }
