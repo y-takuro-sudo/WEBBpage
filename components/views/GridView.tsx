@@ -1,28 +1,47 @@
 'use client'
 
-import { useEffect, useRef, useMemo } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import Lenis from '@studio-freight/lenis'
 import gsap from 'gsap'
 import { useViewStore } from '@/store/useViewStore'
-import { PROJECTS } from '@/constants/data'
+import { Project, Category } from '@/libs/microcms'
 import { TabType } from '@/types'
 
 interface GridViewProps {
   category: Exclude<TabType, 'LANDING' | 'ABOUT'>
+  initialProjects: Project[]
 }
 
-export default function GridView({ category }: GridViewProps) {
+export default function GridView({ category, initialProjects }: GridViewProps) {
   const { theme } = useViewStore()
   const containerRef = useRef<HTMLDivElement>(null)
   const gridRef = useRef<HTMLDivElement>(null)
   const lenisRef = useRef<Lenis | null>(null)
+  const [projects] = useState<Project[]>(initialProjects)
 
   const isDark = theme === 'DARK'
 
-  const filteredProjects = useMemo(() => {
-    return PROJECTS.filter((p) => p.category === category)
-  }, [category])
+  // Map tab type to CMS category
+  const getCategoryLabel = (): Category => {
+    switch (category) {
+      case 'JAMES_WEBB':
+        return 'JAMES WEBB'
+      case 'COMMERCIAL':
+        return 'COMMERCIAL'
+      case 'MV':
+        return 'MV'
+      default:
+        return 'COMMERCIAL'
+    }
+  }
+
+  const categoryLabel = getCategoryLabel()
+
+  // Filter projects by category
+  const filteredProjects = projects.filter((p) =>
+    p.category.includes(categoryLabel)
+  )
 
   // Initialize Lenis for internal scroll
   useEffect(() => {
@@ -71,7 +90,7 @@ export default function GridView({ category }: GridViewProps) {
         delay: 0.2,
       }
     )
-  }, [category])
+  }, [category, filteredProjects])
 
   return (
     <div
@@ -88,7 +107,7 @@ export default function GridView({ category }: GridViewProps) {
               isDark ? 'text-white' : 'text-black'
             }`}
           >
-            {category.replace('_', ' ')}
+            {categoryLabel}
           </h2>
           <p
             className={`text-sm tracking-widest mt-4 ${
@@ -111,7 +130,7 @@ export default function GridView({ category }: GridViewProps) {
             >
               <div className="relative aspect-[4/3] w-full">
                 <Image
-                  src={project.thumbnail}
+                  src={project.thumbnail.url}
                   alt={project.title}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -131,12 +150,27 @@ export default function GridView({ category }: GridViewProps) {
                   <h3 className="text-xl md:text-2xl font-light text-white">
                     {project.title}
                   </h3>
-                  <p className="text-sm mt-2 text-white/80">{project.client}</p>
+                  <p className="text-sm mt-2 text-white/80">
+                    {project.client}
+                  </p>
                 </div>
               </div>
             </article>
           ))}
         </div>
+
+        {/* Empty State */}
+        {filteredProjects.length === 0 && (
+          <div className="flex items-center justify-center h-64">
+            <p
+              className={`text-lg ${
+                isDark ? 'text-white/40' : 'text-black/40'
+              }`}
+            >
+              No projects found
+            </p>
+          </div>
+        )}
       </div>
     </div>
   )

@@ -2,13 +2,18 @@
 
 import { useEffect, useRef } from 'react'
 import { useViewStore } from '@/store/useViewStore'
+import { Project } from '@/libs/microcms'
 import gsap from 'gsap'
 import LandingView from './views/LandingView'
 import GridView from './views/GridView'
 import AboutView from './views/AboutView'
 import MenuOverlay from './MenuOverlay'
 
-export default function Layout() {
+interface LayoutProps {
+  projects: Project[]
+}
+
+export default function Layout({ projects }: LayoutProps) {
   const { activeTab, theme, isMenuOpen, toggleMenu, isTransitioning } = useViewStore()
   const viewContainerRef = useRef<HTMLDivElement>(null)
   const isDark = theme === 'DARK'
@@ -29,11 +34,11 @@ export default function Layout() {
       case 'LANDING':
         return <LandingView />
       case 'COMMERCIAL':
-        return <GridView category="COMMERCIAL" />
+        return <GridView category="COMMERCIAL" initialProjects={projects} />
       case 'MV':
-        return <GridView category="MV" />
+        return <GridView category="MV" initialProjects={projects} />
       case 'JAMES_WEBB':
-        return <GridView category="JAMES_WEBB" />
+        return <GridView category="JAMES_WEBB" initialProjects={projects} />
       case 'ABOUT':
         return <AboutView />
       default:
@@ -64,21 +69,21 @@ export default function Layout() {
         className="fixed top-8 right-8 z-[200] p-2"
         aria-label="Toggle menu"
       >
-        <div className="flex flex-col gap-1.5 mix-blend-difference">
+        <div className="flex flex-col gap-1.5">
           <span
-            className={`block w-7 h-[2px] bg-white transition-all duration-300 origin-center ${
+            className={`block w-7 h-[2px] transition-all duration-300 origin-center ${
               isMenuOpen ? 'rotate-45 translate-y-[7px]' : ''
-            }`}
+            } ${isDark && !isMenuOpen ? 'bg-white' : 'bg-black'}`}
           />
           <span
-            className={`block w-7 h-[2px] bg-white transition-all duration-300 ${
+            className={`block w-7 h-[2px] transition-all duration-300 ${
               isMenuOpen ? 'opacity-0 scale-x-0' : ''
-            }`}
+            } ${isDark && !isMenuOpen ? 'bg-white' : 'bg-black'}`}
           />
           <span
-            className={`block w-7 h-[2px] bg-white transition-all duration-300 origin-center ${
+            className={`block w-7 h-[2px] transition-all duration-300 origin-center ${
               isMenuOpen ? '-rotate-45 -translate-y-[7px]' : ''
-            }`}
+            } ${isDark && !isMenuOpen ? 'bg-white' : 'bg-black'}`}
           />
         </div>
       </button>
