@@ -1,4 +1,4 @@
-import { createClient, MicroCMSClient } from 'microcms-js-sdk'
+import { createClient } from 'microcms-js-sdk'
 
 // Types - Match MicroCMS schema
 export type Category = 'JAMES_WEBB' | 'COMMERCIAL' | 'MV'
@@ -41,9 +41,9 @@ const isCMSConfigured = (): boolean => {
 }
 
 // Lazy client initialization
-let _client: MicroCMSClient | null = null
+let _client: ReturnType<typeof createClient> | null = null
 
-const getClient = (): MicroCMSClient | null => {
+const getClient = (): ReturnType<typeof createClient> | null => {
   if (!isCMSConfigured()) {
     return null
   }
